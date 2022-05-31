@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { UserModel as User } from '../services/user-model';
+import { UserModel as User } from '../dto/user-dto.model';
 import * as auth from 'firebase/auth';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import {
@@ -7,8 +7,9 @@ import {
   AngularFirestoreDocument,
 } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
+import { ComponentsPaths } from 'src/app/constants/components-paths';
 import Swal from 'sweetalert2';
-import { Messages } from 'src/app/constants/messages';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -34,77 +35,78 @@ export class AuthService {
     });
   }
   // Inicio de sesión con email y contraseña
-  SignIn(email: string, password: string) {
+  SignIn(errorMessage:string, pathResult:string,email: string, password: string) {
     return this.afAuth
-      .signInWithEmailAndPassword(email, password)
+    .signInWithEmailAndPassword(email, password)
+    .then((result) => {
+      this.ngZone.run(() => {
+        this.router.navigate([pathResult]);
+      });
+      this.SetUserData(result.user);
+    })
+    .catch((error) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: errorMessage,
+      });
+    });
+  }
+  // registro con email y contraseña
+  SignUp(errorMessage:string, pathResult:string,email: string, password: string) {
+    return this.afAuth
+      .createUserWithEmailAndPassword(email, password)
       .then((result) => {
         this.ngZone.run(() => {
-          this.router.navigate(['dashboard']);
+          this.router.navigate([pathResult]);
         });
         this.SetUserData(result.user);
       })
       .catch((error) => {
-        window.alert(error.message);
-      });
-  }
-  // registro con email y contraseña
-  SignUp(email: string, password: string) {
-    return this.afAuth
-      .createUserWithEmailAndPassword(email, password)
-      .then((result) => {
-        this.SendVerificationMail();
-        this.SetUserData(result.user);
-      })
-      .catch((error) => {
-        window.alert(error.message);
-      });
-  }
-  // envia un correo de verificación al nuevo usuario
-  SendVerificationMail() {
-    return this.afAuth.currentUser
-      .then((u: any) => u.sendEmailVerification())
-      .then(() => {
-        this.router.navigate(['verify-email-address']);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: errorMessage,
+        });
       });
   }
   // envia el correo de recuperación de cuenta
   ForgotPassword(passwordResetEmail: string) {
     return this.afAuth
-      .sendPasswordResetEmail(passwordResetEmail)
-      .then(() => {
-        Swal.fire(Messages.CORREO_RECUPRAR_CONTRASENA_ENVIADO);
-      })
-      .catch((error) => {
-        window.alert(error);
-      });
+      .sendPasswordResetEmail(passwordResetEmail);
   }
   // valida que el usuario tenga la sesión iniciada
   get isLoggedIn(): boolean {
     const user = JSON.parse(localStorage.getItem('user')!);
-    return user !== null && user.emailVerified !== false ? true : false;
+    return user !== null;
   }
   // Inicio de sesión con Google enviado los parametros al metodo AuthLogin
-  GoogleAuth() {
-    return this.AuthLogin(new auth.GoogleAuthProvider()).then((res: any) => {
+  GoogleAuth( errorMessage:string, pathResult:string) {
+    return this.AuthLogin(errorMessage,pathResult, new auth.GoogleAuthProvider()).then((res: any) => {
       if (res) {
-        this.router.navigate(['dashboard']);
+        this.router.navigate([pathResult]);
       }
     });
   }
-  // Inicia sesión dependiendo del proveedor 
-  AuthLogin(provider: any) {
+  // Logica para varios proveedores de inicio de sesión
+  AuthLogin(errorMessage:string, pathResult:string,provider: any) {
     return this.afAuth
       .signInWithPopup(provider)
       .then((result) => {
         this.ngZone.run(() => {
-          this.router.navigate(['dashboard']);
+          this.router.navigate([pathResult]);
         });
         this.SetUserData(result.user);
       })
       .catch((error) => {
-        window.alert(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: errorMessage,
+        });
       });
   }
+  
   /* 
     Toma los datos del usuario que inicio sesión, llena el modelo de usuario y lo añade la base de datos FirebaseFirestore
    */
@@ -127,7 +129,7 @@ export class AuthService {
   SignOut() {
     return this.afAuth.signOut().then(() => {
       localStorage.removeItem('user');
-      this.router.navigate(['sign-in']);
+      this.router.navigate([ComponentsPaths.PATH_LOGIN]);
     });
   }
 }

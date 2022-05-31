@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { environment } from 'src/environments/environment';
+import { environment } from 'src/environments/environment.prod';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,7 +13,13 @@ import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from './shared/services/auth-services.service';
+import { AuthService } from './shared/services/auth/auth-services.service';
+import { SignupComponent } from './components/signup/signup.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { HttpClientModule } from '@angular/common/http';
+import { QuestionUserListComponent } from './components/question-user-list/question-user-list.component';
+import { AnswerUserListComponent } from './components/answer-user-list/answer-user-list.component';
 
 
 @NgModule({
@@ -21,6 +27,11 @@ import { AuthService } from './shared/services/auth-services.service';
     AppComponent,
     HomeComponent,
     LoginComponent,
+    SignupComponent,
+    ForgotPasswordComponent,
+    NavBarComponent,
+    QuestionUserListComponent,
+    AnswerUserListComponent,
   ],
   imports: [
     BrowserModule,
@@ -32,8 +43,11 @@ import { AuthService } from './shared/services/auth-services.service';
     AngularFireDatabaseModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
   ],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

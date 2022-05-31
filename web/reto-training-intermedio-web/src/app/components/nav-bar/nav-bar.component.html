@@ -1,0 +1,42 @@
+<nav
+  class="navbar navbar-expand-md navbar-light bg-light"
+>
+  <div class="container-fluid">
+    <ul class="navbar-nav ms-3">
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="/home"
+          routerLinkActive="activo rounded-pill"
+          >Home</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="/mis-preguntas"
+          routerLinkActive="activo rounded-pill"
+          >Mis preguntas</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="/mis-respuestas"
+          routerLinkActive="activo rounded-pill"
+          >Mis respuestas</a
+        >
+      </li>
+    </ul>
+    <ul class="navbar-nav ms-3">
+      <li class="nav-item">
+        <a
+          class="nav-link rounded-pill"
+          [routerLink]=""
+          (click)="authService.SignOut()"
+          >Cerrar sesión</a
+        >
+      </li>
+    </ul>
+  </div>
+</nav>

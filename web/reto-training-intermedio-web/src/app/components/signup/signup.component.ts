@@ -5,18 +5,16 @@ import { AuthService } from 'src/app/shared/services/auth/auth-services.service'
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { ComponentsPaths } from 'src/app/constants/components-paths';
-
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
+  selector: 'app-signup',
+  templateUrl: './signup.component.html',
   styles: [],
 })
-export class LoginComponent implements OnInit {
+export class SignupComponent implements OnInit {
   /**
    * Atributo que contiene al controlador del formulario
    */
   public formController: FormGroup;
-
   constructor(public authService: AuthService, private router: Router) {
     this.formController = new FormGroup({
       email: new FormControl('', Validators.required),
@@ -24,22 +22,21 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    if (this.authService.isLoggedIn) {
-      this.home();
-    }
-  }
+  ngOnInit(): void {}
+
   /**
-   * Metodo encargado de iniciar sesión
+   *
+   * @returns Metodo encargado de llamar al servicio para registrar un usuario
    */
-  public iniciarSesion() {
+  public registrarUsuario() {
     if (this.validarformulario()) {
       this.authService
-        .SignIn(Messages.FALLO_EN_INICIO_SESION,ComponentsPaths.PATH_HOME,
+        .SignUp(Messages.FALLO_EN_REGISTRO,ComponentsPaths.PATH_HOME,
           this.formController.controls.email.value,
           this.formController.controls.password.value
         );
     }
+    return;
   }
   /**
    * metodo encargado de validar el formulario
@@ -54,17 +51,10 @@ export class LoginComponent implements OnInit {
     }
   }
   /**
-   * Metodo para abrir la pagina de registrarse
+   * Metodo que abre la pantalla de login
    */
-  public singUp() {
-    this.router.navigate([ComponentsPaths.PATH_REGISTRO]);
-  }
-
-  /**
-   * Metodo para abrir la pagina de olvide mi contrasena
-   */
-  public forgotPassWord() {
-    this.router.navigate([ComponentsPaths.PATH_FORGOT_PASSWORD]);
+  public signIn() {
+    this.router.navigate([ComponentsPaths.PATH_LOGIN]);
   }
 
   /**
@@ -73,12 +63,11 @@ export class LoginComponent implements OnInit {
   public home() {
     this.router.navigate([ComponentsPaths.PATH_HOME]);
   }
-
   /**
    * Metodo encargado de abrir el modal de Google para iniciar sesión
    */
   public singInGoogle() {
-    this.authService
-      .GoogleAuth(Messages.FALLO_EN_REGISTRO, ComponentsPaths.PATH_HOME);
+    this.authService.GoogleAuth(Messages.FALLO_EN_REGISTRO, ComponentsPaths.PATH_HOME);
   }
+
 }
