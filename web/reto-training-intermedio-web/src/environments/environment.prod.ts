@@ -8,5 +8,5 @@ export const environment = {
     messagingSenderId: "33629074091",
     appId: "1:33629074091:web:7de5f9d089d243bb847dee"
   },
-  apiUrlBase:"localhost:8080",
+  apiUrlBase:"https://reto-training-intermedio.herokuapp.com",
 };
